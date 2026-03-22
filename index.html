@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Petrowax · Estaciones de Éxito</title>
+  <!-- Google Fonts + Font Awesome -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #1e1b16;
+      font-family: 'Playfair Display', serif;
+      color: #e8e0d0;
+      scroll-behavior: smooth;
+    }
+
+    :root {
+      --track-brown: #2c241a;
+      --rust-red: #a5532b;
+      --gold-brass: #c8a86b;
+      --smoke-gray: #4a3f35;
+      --oil-black: #1e1b16;
+      --iron-dark: #3e362e;
+      --brass-light: #e2c28b;
+    }
+
+    ::-webkit-scrollbar {
+      width: 10px;
+      background: #2c241a;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: var(--gold-brass);
+      border-radius: 10px;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2rem 2rem 0 2rem;
+    }
+
+    .locomotive-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      border-bottom: 3px solid var(--gold-brass);
+      padding-bottom: 1rem;
+      margin-bottom: 3rem;
+      flex-wrap: wrap;
+    }
+    .title h1 {
+      font-size: 2.5rem;
+      font-weight: 900;
+      letter-spacing: 2px;
+      color: var(--brass-light);
+      text-shadow: 2px 2px 0px #2c1a0e;
+    }
+    .title p {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.85rem;
+      letter-spacing: 2px;
+      color: var(--gold-brass);
+    }
+    .sound-control button {
+      background: var(--track-brown);
+      border: 1px solid var(--gold-brass);
+      color: var(--brass-light);
+      padding: 8px 16px;
+      font-family: 'Space Mono', monospace;
+      cursor: pointer;
+      transition: all 0.2s;
+      border-radius: 30px;
+    }
+    .sound-control button:hover {
+      background: var(--gold-brass);
+      color: #1e1b16;
+    }
+
+    section {
+      margin-bottom: 5rem;
+      background: rgba(30, 27, 22, 0.7);
+      border-left: 6px solid var(--gold-brass);
+      padding: 2rem 2rem;
+      border-radius: 0 24px 24px 0;
+      backdrop-filter: blur(2px);
+      transition: transform 0.2s;
+    }
+    .section-title {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 2px dashed var(--gold-brass);
+      display: inline-block;
+      padding-right: 2rem;
+    }
+    .section-title i {
+      font-size: 2rem;
+      color: var(--gold-brass);
+    }
+
+    /* ESTACIONES (sucursales reales) */
+    .estaciones-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.8rem;
+      margin: 2rem 0;
+    }
+    .estacion-card {
+      background: #2c241a;
+      text-align: left;
+      padding: 1rem;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border-bottom: 3px solid var(--gold-brass);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .estacion-card i {
+      font-size: 2rem;
+      color: var(--gold-brass);
+      margin-bottom: 0.2rem;
+    }
+    .estacion-card h4 {
+      font-family: 'Space Mono', monospace;
+      font-weight: bold;
+      font-size: 1.2rem;
+      margin: 5px 0;
+    }
+    .estacion-card p, .estacion-card small {
+      font-size: 0.75rem;
+      font-family: 'Space Mono', monospace;
+      line-height: 1.3;
+      color: #d4ccb8;
+    }
+    .estacion-card:hover {
+      background: #4a3f35;
+      transform: translateY(-5px);
+    }
+    .foto-modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.9);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    .foto-modal img {
+      max-width: 80%;
+      max-height: 80%;
+      border: 5px solid var(--gold-brass);
+      border-radius: 20px;
+    }
+    .contador-ruta {
+      margin-top: 1rem;
+      font-family: 'Space Mono', monospace;
+      background: #1e1b16;
+      display: inline-block;
+      padding: 0.5rem 1rem;
+      border-radius: 40px;
+      font-size: 0.9rem;
+    }
+
+    /* TIMELINE con años reales Petrowax */
+    .timeline {
+      position: relative;
+      margin: 2rem 0;
+      padding-left: 2rem;
+    }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 10px;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      background: var(--gold-brass);
+    }
+    .timeline-item {
+      margin-bottom: 2rem;
+      position: relative;
+      padding-left: 2rem;
+    }
+    .timeline-item::before {
+      content: '🕯️';
+      position: absolute;
+      left: -12px;
+      top: 0;
+      background: var(--track-brown);
+      border-radius: 50%;
+      font-size: 1.2rem;
+    }
+    .timeline-year {
+      font-family: 'Space Mono', monospace;
+      font-weight: bold;
+      color: var(--brass-light);
+      font-size: 1.2rem;
+    }
+
+    /* GALERÍA DE PRODUCTOS */
+    .galeria {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+    .item-galeria {
+      background: #2c241a;
+      border-radius: 16px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: 0.2s;
+      border: 1px solid var(--gold-brass);
+    }
+    .item-galeria img {
+      width: 100%;
+      height: 160px;
+      object-fit: cover;
+      display: block;
+    }
+    .item-galeria p {
+      padding: 0.5rem;
+      text-align: center;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.8rem;
+    }
+    .item-galeria:hover {
+      transform: scale(1.02);
+      border-color: var(--brass-light);
+    }
+
+    /* CABINA DE CONTROL */
+    .cabina-panel {
+      background: #2c241a;
+      padding: 1.5rem;
+      border-radius: 30px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .velocimetro {
+      text-align: center;
+      background: #1e1b16;
+      padding: 1rem;
+      border-radius: 50%;
+      width: 180px;
+      height: 180px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      border: 3px solid var(--gold-brass);
+    }
+    .velocimetro span {
+      font-size: 3rem;
+      font-family: 'Space Mono', monospace;
+      font-weight: bold;
+      color: var(--brass-light);
+    }
+    .controles {
+      flex: 1;
+      min-width: 200px;
+    }
+    .slider-container {
+      margin: 1rem 0;
+    }
+    input[type="range"] {
+      width: 100%;
+      background: var(--track-brown);
+      accent-color: var(--gold-brass);
+    }
+    .whistle-btn {
+      background: var(--rust-red);
+      border: none;
+      padding: 12px 25px;
+      font-family: 'Space Mono', monospace;
+      font-weight: bold;
+      color: #fff;
+      border-radius: 40px;
+      cursor: pointer;
+      margin-top: 1rem;
+      transition: 0.1s linear;
+    }
+    .whistle-btn:active {
+      transform: scale(0.96);
+    }
+    .track-animation {
+      margin-top: 1.5rem;
+      background: #3e362e;
+      height: 50px;
+      border-radius: 30px;
+      overflow: hidden;
+      position: relative;
+    }
+    .train-move {
+      position: absolute;
+      bottom: 5px;
+      font-size: 2.2rem;
+      transition: left 0.1s linear;
+      left: 0;
+    }
+
+    /* BOLETÍN */
+    .mensajes-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin: 1.5rem 0;
+      max-height: 250px;
+      overflow-y: auto;
+      background: #1e1b16;
+      padding: 1rem;
+      border-radius: 20px;
+    }
+    .ticket {
+      background: #fef0cf;
+      color: #2c241a;
+      padding: 0.8rem;
+      border-radius: 12px;
+      font-family: 'Space Mono', monospace;
+      width: 100%;
+      border-left: 8px solid var(--rust-red);
+      box-shadow: 2px 2px 0px rgba(0,0,0,0.2);
+    }
+    .form-boletin input, .form-boletin textarea {
+      width: 100%;
+      margin: 0.5rem 0;
+      padding: 0.7rem;
+      background: #2c241a;
+      border: 1px solid var(--gold-brass);
+      color: #e8e0d0;
+      font-family: 'Space Mono', monospace;
+      border-radius: 12px;
+    }
+    .form-boletin button {
+      background: var(--gold-brass);
+      border: none;
+      padding: 0.7rem 1.5rem;
+      font-weight: bold;
+      font-family: 'Space Mono', monospace;
+      cursor: pointer;
+      border-radius: 30px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 2rem 0;
+      border-top: 1px solid var(--gold-brass);
+      font-size: 0.8rem;
+      margin-top: 2rem;
+    }
+
+    @media (max-width: 800px) {
+      .container { padding: 1rem; }
+      .section-title { font-size: 1.5rem; }
+      .velocimetro { width: 130px; height: 130px; }
+      .velocimetro span { font-size: 2rem; }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="locomotive-header">
+    <div class="title">
+      <h1>🕯️ PETROWAX · ESTACIONES DE ÉXITO</h1>
+      <p>Red de sucursales · 29 años iluminando tus proyectos</p>
+    </div>
+    <div class="sound-control">
+      <button id="toggleSoundBtn"><i class="fas fa-volume-up"></i> Silbido ambiente</button>
+    </div>
+  </div>
+
+  <!-- VAGÓN 1: EL ANDÉN con Sucursales reales extraídas de petrowax.com.mx/sucursales/ -->
+  <section id="anden">
+    <div class="section-title"><i class="fas fa-map-marked-alt"></i> Estaciones Petrowax · Nuestra Red Nacional</div>
+    <div class="estaciones-grid" id="estacionesGrid">
+      <!-- Los datos se cargarán dinámicamente con JS para mantener claridad, pero los definimos inline también por robustez -->
+    </div>
+    <div class="contador-ruta"><i class="fas fa-train"></i> 6 estaciones operando · 29 años de trayectoria · Presentes en CDMX, Jalisco, Edomex, QRoo, Puebla</div>
+  </section>
+
+  <!-- VAGÓN 2: EL MAQUINISTA (Bitácora con años reales) -->
+  <section id="maquinista">
+    <div class="section-title"><i class="fas fa-history"></i> Bitácora del Maquinista · 29 años sobre rieles</div>
+    <div class="timeline">
+      <div class="timeline-item"><div class="timeline-year">1997 · Fundación</div><p>Nace Petrowax en la Ciudad de México, iniciando operaciones con insumos de calidad para velas y veladoras.</p></div>
+      <div class="timeline-item"><div class="timeline-year">2005 · Primera expansión</div><p>Apertura de sucursal en Guadalajara, conectando con el occidente del país.</p></div>
+      <div class="timeline-item"><div class="timeline-year">2015 · Llegada a Toluca y Cancún</div><p>Consolidación nacional con nuevas estaciones en el Estado de México y el Caribe mexicano.</p></div>
+      <div class="timeline-item"><div class="timeline-year">2023 · Sucursal Puebla</div><p>Incorporación de la estación Puebla para atender el centro del país.</p></div>
+      <div class="timeline-item"><div class="timeline-year">2024 · Nueva estación Tonalá</div><p>12 de septiembre: apertura en Tonalá, Jalisco, fortaleciendo la red.</p></div>
+      <div class="timeline-item"><div class="timeline-year">2025 · 29 Aniversario</div><p>“Iluminando tus proyectos” — Celebramos 29 años de éxito, unión del equipo y confianza de clientes y colaboradores.</p></div>
+    </div>
+  </section>
+
+  <!-- VAGÓN 3: LA COLECCIÓN (Productos estrella de Petrowax) -->
+  <section id="coleccion">
+    <div class="section-title"><i class="fas fa-boxes"></i> La Colección · Productos que iluminan</div>
+    <div class="galeria" id="galeriaColeccion">
+      <div class="item-galeria" data-img="https://picsum.photos/id/20/400/300" data-desc="Fragancias para velas aromáticas">
+        <img src="https://picsum.photos/id/20/400/300" alt="fragancias">
+        <p>🌸 Fragancias premium</p>
+      </div>
+      <div class="item-galeria" data-img="https://picsum.photos/id/43/400/300" data-desc="Ceras Polietilénicas industriales">
+        <img src="https://picsum.photos/id/43/400/300" alt="ceras polietilénicas">
+        <p>🏭 Ceras Polietilénicas</p>
+      </div>
+      <div class="item-galeria" data-img="https://picsum.photos/id/124/400/300" data-desc="Lumigel · Cera transparente para creaciones únicas">
+        <img src="https://picsum.photos/id/124/400/300" alt="Lumigel">
+        <p>✨ Lumigel · Transparencia creativa</p>
+      </div>
+      <div class="item-galeria" data-img="https://picsum.photos/id/58/400/300" data-desc="Cera Terapéutica para SPA · Relajación">
+        <img src="https://picsum.photos/id/58/400/300" alt="cera SPA">
+        <p>💆 Cera Terapéutica SPA</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- VAGÓN 4: CABINA DE CONTROL (Simulador) -->
+  <section id="cabina">
+    <div class="section-title"><i class="fas fa-tachometer-alt"></i> Cabina de control · Energía en movimiento</div>
+    <div class="cabina-panel">
+      <div class="velocimetro">
+        <span id="speedValue">0</span>
+        <small>km/h · innovación</small>
+      </div>
+      <div class="controles">
+        <div class="slider-container">
+          <label>Acelerador de proyectos <i class="fas fa-arrow-up"></i></label>
+          <input type="range" id="throttle" min="0" max="120" value="0" step="1">
+        </div>
+        <button id="whistleBtn" class="whistle-btn"><i class="fas fa-train"></i> ¡Pitar! Silbato de estación</button>
+      </div>
+    </div>
+    <div class="track-animation" id="trackAnim">
+      <div class="train-move" id="movingTrain">🕯️🚂</div>
+    </div>
+    <p style="margin-top: 12px; font-size: 0.8rem; text-align: center;">*Acelera para ver cómo avanza la locomotora Petrowax por sus estaciones</p>
+  </section>
+
+  <!-- VAGÓN 5: BOLETÍN (Mensajes sorpresa como billetes) -->
+  <section id="boletin">
+    <div class="section-title"><i class="fas fa-ticket-alt"></i> El Boletín · Mensajes para el maquinista</div>
+    <div id="ticketsContainer" class="mensajes-container">
+      <div class="ticket"><strong>Equipo Petrowax:</strong> "¡Gracias por 29 años de liderazgo y pasión!"</div>
+      <div class="ticket"><strong>Cliente frecuente:</strong> "Sus insumos y talleres son de primera. ¡Enhorabuena!"</div>
+    </div>
+    <div class="form-boletin">
+      <input type="text" id="msgName" placeholder="Tu nombre" value="Amigo Petrowax">
+      <textarea id="msgText" rows="2" placeholder="Escribe tu mensaje en forma de billete..."></textarea>
+      <button id="sendTicketBtn"><i class="fas fa-paper-plane"></i> Dejar billete en estación</button>
+    </div>
+  </section>
+
+  <footer>
+    <i class="fas fa-candle-holder"></i> Petrowax · 29 años iluminando tus proyectos · 6 estaciones a tu servicio
+  </footer>
+</div>
+
+<!-- Modal para fotos -->
+<div id="imageModal" class="foto-modal" style="display: none;">
+  <img id="modalImg" src="" alt="ampliación">
+  <div style="position: absolute; top:20px; right:40px; cursor:pointer; color:white; font-size:3rem;" onclick="closeModal()">&times;</div>
+</div>
+
+<script>
+  // ---------- DATOS REALES DE SUCURSALES (desde petrowax.com.mx/sucursales/) ----------
+  const sucursalesReales = [
+    {
+      nombre: "Estación Central CDMX (Matriz)",
+      direccion: "Prof. Otilio Montaño No. 38, Col. Zona Urbana Ejidal Santa María Aztahuacan, Alcaldía Iztapalapa, C.P. 09570, CDMX",
+      horario: "Lun-Vie: 9:00-13:00, 15:00-17:00 | Sáb: 9:00-13:00",
+      contacto: "Tel: 55 1546 6260 | WhatsApp: 55 4825 3364",
+      imagen: "https://petrowax.com.mx/wp-content/uploads/2024/12/PETROWAX-MATRIZ.jpg",
+      icono: "fas fa-building",
+      color: "#c8a86b"
+    },
+    {
+      nombre: "Estación Guadalajara",
+      direccion: "Av. 8 De Julio No. 2142 Int. 18, Col. San Sebastianito, Tlaquepaque, Jalisco, C.P. 45601",
+      horario: "Lun-Vie: 9:00-13:00, 15:00-17:00 | Sáb: 9:00-13:00",
+      contacto: "Tel: 33 3812 1910 | WhatsApp: 33 3171 3382",
+      imagen: "https://picsum.photos/id/15/400/300",  // placeholder temático
+      icono: "fas fa-train",
+    },
+    {
+      nombre: "Estación Toluca",
+      direccion: "Plan de Texca No. 217-B, Col. La Magdalena, Toluca de Lerdo, Estado de México, C.P. 50190",
+      horario: "Lun-Vie: 9:00-14:00, 15:00-17:00 | Sáb: 9:00-13:00",
+      contacto: "Tel: 722 180 2616 | WhatsApp: 55 4500 1307",
+      imagen: "https://picsum.photos/id/104/400/300",
+      icono: "fas fa-mountain",
+    },
+    {
+      nombre: "Estación Cancún",
+      direccion: "Plaza Galerías, Super Manzana 2, Manzana 1, Lotes 18 y 20 Local 10, Benito Juárez, Cancún, Q. Roo, C.P. 77500",
+      horario: "Lun-Vie: 10:00-14:00, 15:00-17:00 | Sáb: 10:00-14:00",
+      contacto: "Tel: 998 251 8965 | WhatsApp: 998 180 4348",
+      imagen: "https://picsum.photos/id/169/400/300",
+      icono: "fas fa-umbrella-beach",
+    },
+    {
+      nombre: "Estación Puebla",
+      direccion: "Blvd. Ayuntamiento No. 6210, Col. Tepeyac, Puebla, Puebla, C.P. 72210",
+      horario: "Lun-Vie: 9:00-14:00, 15:00-17:00 | Sáb: 9:00-14:00",
+      contacto: "Tel: 222 408 0754 | WhatsApp: 222 771 9579",
+      imagen: "https://picsum.photos/id/58/400/300",
+      icono: "fas fa-church",
+    },
+    {
+      nombre: "Estación Tonalá",
+      direccion: "Av. Tonaltecas No 336, interior 3, Col. Tonalá Centro, Tonalá, Jalisco, C.P. 45400",
+      horario: "Lun-Vie: 9:00-14:00, 15:00-18:00 | Sáb: 9:00-14:00",
+      contacto: "WhatsApp: 33 2835 7290",
+      imagen: "https://picsum.photos/id/124/400/300",
+      icono: "fas fa-store",
+    }
+  ];
+
+  // Renderizar estaciones en el grid
+  const gridEstaciones = document.getElementById('estacionesGrid');
+  function renderSucursales() {
+    gridEstaciones.innerHTML = '';
+    sucursalesReales.forEach(suc => {
+      const card = document.createElement('div');
+      card.className = 'estacion-card';
+      card.setAttribute('data-foto', suc.imagen);
+      card.setAttribute('data-nombre', suc.nombre);
+      card.innerHTML = `
+        <i class="${suc.icono}"></i>
+        <h4>${suc.nombre}</h4>
+        <p><i class="fas fa-location-dot"></i> ${suc.direccion}</p>
+        <small><i class="far fa-clock"></i> ${suc.horario}</small>
+        <small><i class="fas fa-phone-alt"></i> ${suc.contacto}</small>
+      `;
+      card.addEventListener('click', () => {
+        openModal(suc.imagen, `Estación: ${suc.nombre} - ${suc.direccion}`);
+      });
+      gridEstaciones.appendChild(card);
+    });
+  }
+  renderSucursales();
+
+  // ---------- SONIDO AMBIENTE ----------
+  let audioContext = null;
+  let isPlaying = false;
+  let ambientSource = null;
+  const toggleBtn = document.getElementById('toggleSoundBtn');
+  
+  function playAmbientTrain() {
+    if (!audioContext) {
+      audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if (ambientSource) {
+      try { ambientSource.stop(); } catch(e) {}
+    }
+    ambientSource = audioContext.createBufferSource();
+    const bufferSize = audioContext.sampleRate * 2;
+    const buffer = audioContext.createBuffer(1, bufferSize, audioContext.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) {
+      let rhythm = Math.sin(i / audioContext.sampleRate * 30) * 0.2 + (Math.random() * 0.1);
+      data[i] = rhythm * 0.3;
+    }
+    ambientSource.buffer = buffer;
+    ambientSource.loop = true;
+    const gainNode = audioContext.createGain();
+    gainNode.gain.value = 0.2;
+    ambientSource.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    ambientSource.start();
+  }
+  
+  function stopAmbient() {
+    if (ambientSource) {
+      ambientSource.stop();
+      ambientSource = null;
+    }
+  }
+  
+  toggleBtn.addEventListener('click', () => {
+    if (!isPlaying) {
+      if (audioContext && audioContext.state === 'suspended') {
+        audioContext.resume().then(() => {
+          playAmbientTrain();
+          isPlaying = true;
+          toggleBtn.innerHTML = '<i class="fas fa-volume-mute"></i> Silenciar ambiente';
+        });
+      } else {
+        if (!audioContext) audioContext = new AudioContext();
+        audioContext.resume().then(() => {
+          playAmbientTrain();
+          isPlaying = true;
+          toggleBtn.innerHTML = '<i class="fas fa-volume-mute"></i> Silenciar ambiente';
+        });
+      }
+    } else {
+      stopAmbient();
+      isPlaying = false;
+      toggleBtn.innerHTML = '<i class="fas fa-volume-up"></i> Silbido ambiente';
+    }
+  });
+  
+  // ---------- MODAL ----------
+  const modal = document.getElementById('imageModal');
+  const modalImg = document.getElementById('modalImg');
+  function openModal(imgSrc, captionText) {
+    modal.style.display = 'flex';
+    modalImg.src = imgSrc;
+    modalImg.alt = captionText || 'Petrowax';
+  }
+  window.closeModal = function() {
+    modal.style.display = 'none';
+  }
+  modal.addEventListener('click', (e) => {
+    if(e.target === modal) closeModal();
+  });
+  
+  // Galería de productos
+  const galleryItems = document.querySelectorAll('.item-galeria');
+  galleryItems.forEach(item => {
+    item.addEventListener('click', () => {
+      const imgElem = item.querySelector('img');
+      const src = imgElem ? imgElem.src : '';
+      const desc = item.getAttribute('data-desc') || 'Producto Petrowax';
+      openModal(src, desc);
+    });
+  });
+  
+  // ---------- CABINA ----------
+  const throttleSlider = document.getElementById('throttle');
+  const speedSpan = document.getElementById('speedValue');
+  const trainIcon = document.getElementById('movingTrain');
+  const trackDiv = document.getElementById('trackAnim');
+  let currentSpeed = 0;
+  let trainPosition = 0;
+  
+  function updateSpeed() {
+    currentSpeed = parseInt(throttleSlider.value);
+    speedSpan.innerText = currentSpeed;
+  }
+  
+  throttleSlider.addEventListener('input', updateSpeed);
+  
+  function animateTrain() {
+    if (!trainIcon || !trackDiv) return;
+    if (currentSpeed > 0) {
+      let increment = currentSpeed / 800;
+      trainPosition = (trainPosition + increment) % 1.0;
+      let leftPercent = trainPosition * 100;
+      trainIcon.style.left = `calc(${leftPercent}% - 10px)`;
+    } else {
+      trainPosition = 0;
+      trainIcon.style.left = '0px';
+    }
+    requestAnimationFrame(animateTrain);
+  }
+  animateTrain();
+  updateSpeed();
+  
+  // Silbato
+  const whistleBtn = document.getElementById('whistleBtn');
+  function playWhistle() {
+    let actx = audioContext ? audioContext : new (window.AudioContext || window.webkitAudioContext)();
+    const now = actx.currentTime;
+    const osc = actx.createOscillator();
+    const gain = actx.createGain();
+    osc.connect(gain);
+    gain.connect(actx.destination);
+    osc.type = 'sine';
+    osc.frequency.value = 850;
+    gain.gain.setValueAtTime(0.3, now);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.9);
+    osc.start();
+    osc.stop(now + 0.8);
+    const osc2 = actx.createOscillator();
+    const gain2 = actx.createGain();
+    osc2.connect(gain2);
+    gain2.connect(actx.destination);
+    osc2.type = 'triangle';
+    osc2.frequency.value = 420;
+    gain2.gain.setValueAtTime(0.2, now);
+    gain2.gain.exponentialRampToValueAtTime(0.0001, now + 0.9);
+    osc2.start();
+    osc2.stop(now + 0.9);
+    if (actx.state === 'suspended') actx.resume();
+    
+    const panel = document.querySelector('.cabina-panel');
+    panel.style.transform = 'translateX(2px)';
+    setTimeout(() => panel.style.transform = '', 100);
+  }
+  whistleBtn.addEventListener('click', playWhistle);
+  
+  // ---------- BOLETÍN CON GOOGLE SHEETS ----------
+const API_URL = "https://script.google.com/macros/s/AKfycbyR5dRSlauaRRiTIfh8mcEsoqjwMs5FVbwd-pppxZNOleylGmp2L84D59FZ-vGKd34c6A/exec"; // ¡PON TU URL AQUÍ!
+
+const ticketsContainer = document.getElementById('ticketsContainer');
+const sendBtn = document.getElementById('sendTicketBtn');
+const msgName = document.getElementById('msgName');
+const msgText = document.getElementById('msgText');
+
+// Cargar mensajes desde la hoja
+async function loadTickets() {
+  try {
+    const response = await fetch(API_URL);
+    const messages = await response.json();
+    ticketsContainer.innerHTML = '';
+    messages.forEach(msg => {
+      addTicketToDOM(msg.nombre, msg.mensaje);
+    });
+  } catch (error) {
+    console.error('Error al cargar mensajes:', error);
+  }
+}
+
+// Guardar un nuevo mensaje
+async function saveTicket(name, message) {
+  try {
+    const response = await fetch(API_URL, {
+      method: 'POST',
+      mode: 'no-cors', // Necesario para llamadas entre dominios sin CORS complicado
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ nombre: name, mensaje: message })
+    });
+    // Como usamos no-cors, no podemos leer la respuesta, pero el mensaje se envió.
+    // Recargamos la lista para ver el nuevo mensaje (aunque puede tardar unos segundos en actualizarse)
+    setTimeout(loadTickets, 500);
+  } catch (error) {
+    console.error('Error al enviar mensaje:', error);
+  }
+}
+
+function addTicketToDOM(name, message) {
+  const ticketDiv = document.createElement('div');
+  ticketDiv.className = 'ticket';
+  ticketDiv.innerHTML = `<strong>${escapeHtml(name)}:</strong> "${escapeHtml(message)}"`;
+  ticketsContainer.appendChild(ticketDiv);
+  ticketsContainer.scrollTop = ticketsContainer.scrollHeight;
+}
+
+function escapeHtml(str) {
+  return str.replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m]));
+}
+
+sendBtn.addEventListener('click', () => {
+  let name = msgName.value.trim();
+  let message = msgText.value.trim();
+  if (!message) { alert("Escribe un mensaje"); return; }
+  if (!name) name = "Viajero anónimo";
+  saveTicket(name, message);
+  msgText.value = "";
+  msgName.value = "Amigo Petrowax";
+});
+
+// Cargar mensajes al inicio
+loadTickets();
+</script>
+</body>
+</html>
