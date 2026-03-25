@@ -8,7 +8,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
-    /* (el mismo CSS que tenías, no lo cambio para no alargar, pero está completo) */
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { background: #1e1b16; font-family: 'Playfair Display', serif; color: #e8e0d0; scroll-behavior: smooth; }
     :root { --track-brown: #2c241a; --rust-red: #a5532b; --gold-brass: #c8a86b; --smoke-gray: #4a3f35; --oil-black: #1e1b16; --iron-dark: #3e362e; --brass-light: #e2c28b; }
@@ -113,7 +112,7 @@
       <div class="timeline-item"><div class="timeline-year">2015 · Llegada a Toluca y Cancún</div><p>Consolidación nacional con nuevas estaciones en el Estado de México y el Caribe mexicano.</p></div>
       <div class="timeline-item"><div class="timeline-year">2023 · Sucursal Puebla</div><p>Incorporación de la estación Puebla para atender el centro del país.</p></div>
       <div class="timeline-item"><div class="timeline-year">2024 · Nueva estación Tonalá</div><p>12 de septiembre: apertura en Tonalá, Jalisco, fortaleciendo la red.</p></div>
-      <div class="timeline-item"><div class="timeline-year">2025 · 29 Aniversario</div><p>“Iluminando tus proyectos” — Celebramos 29 años de éxito, unión del equipo y confianza de clientes y colaboradores.</p></div>
+      <div class="timeline-item"><div class="timeline-year">2025 · 29 Aniversario</div><p>"Iluminando tus proyectos" — Celebramos 29 años de éxito, unión del equipo y confianza de clientes y colaboradores.</p></div>
     </div>
   </section>
 
@@ -163,7 +162,7 @@
   </footer>
 </div>
 
-<!-- Modal para imágenes de sucursales (excepto Puebla) -->
+<!-- Modal para imágenes de sucursales -->
 <div id="imageModal" class="foto-modal" style="display: none;">
   <img id="modalImg" src="" alt="ampliación">
   <div style="position: absolute; top:20px; right:40px; cursor:pointer; color:white; font-size:3rem;" onclick="closeModal()">&times;</div>
@@ -180,8 +179,8 @@
 
 <script>
   // ==================== CONFIGURACIÓN ====================
-  // URL DE GOOGLE APPS SCRIPT (proporcionada por el usuario)
-  const API_URL = "https://script.google.com/macros/s/AKfycbyG8JQn3TGFJ3lpbbLUv3NYWHb_Cciv3fJb5d96i0PsN14hmtLVPiZkUYuk-kKJA_zQ/exec";
+  // URL DE GOOGLE APPS SCRIPT (ACTUALIZADA)
+  const API_URL = "https://script.google.com/macros/s/AKfycbxvir5_zq2YlV0Pv3mEqGrlsLEwekIMzqCmC0cYxhQyWWh0kyy7UC3rHSpOwqU7fOXF5Q/exec";
   
   // ==================== CONTADOR 27 MARZO ====================
   function updateCountdown() {
@@ -317,65 +316,157 @@
   }
   animateTrain(); updateSpeed();
 
-  // ==================== BOLETÍN CON GOOGLE SHEETS ====================
+  // ==================== BOLETÍN CON GOOGLE SHEETS (VERSIÓN CORREGIDA) ====================
   const ticketsDiv = document.getElementById('ticketsContainer');
   const sendBtn = document.getElementById('sendTicketBtn');
   const nameInput = document.getElementById('msgName');
   const msgInput = document.getElementById('msgText');
-  
-  function escapeHtml(str) { return str.replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m])); }
-  
-  function addTicketToDOM(name, message) {
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, function(m) {
+      if (m === '&') return '&amp;';
+      if (m === '<') return '&lt;';
+      if (m === '>') return '&gt;';
+      return m;
+    });
+  }
+
+  function formatDate(dateString) {
+    if (!dateString) return '';
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleString('es-MX', { 
+        day: '2-digit', 
+        month: '2-digit', 
+        hour: '2-digit', 
+        minute: '2-digit' 
+      });
+    } catch(e) {
+      return '';
+    }
+  }
+
+  function addTicketToDOM(nombre, mensaje, fecha) {
     const ticket = document.createElement('div');
     ticket.className = 'ticket';
-    ticket.innerHTML = `<strong>${escapeHtml(name)}:</strong> "${escapeHtml(message)}"`;
+    ticket.innerHTML = `
+      <strong>✉️ ${escapeHtml(nombre)}</strong>
+      <p style="margin: 8px 0;">"${escapeHtml(mensaje)}"</p>
+      <small style="display: block; text-align: right; opacity: 0.7;">${formatDate(fecha)}</small>
+    `;
     ticketsDiv.appendChild(ticket);
     ticketsDiv.scrollTop = ticketsDiv.scrollHeight;
   }
-  
+
   async function loadMessages() {
     try {
-      const resp = await fetch(API_URL);
-      const messages = await resp.json();
+      ticketsDiv.innerHTML = '<div class="ticket"><i class="fas fa-spinner fa-spin"></i> Cargando mensajes...</div>';
+      
+      const response = await fetch(API_URL);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const messages = await response.json();
+      
+      // Verificar si hay error
+      if (messages.error) {
+        throw new Error(messages.error);
+      }
+      
       ticketsDiv.innerHTML = '';
-      if(messages.length === 0) {
+      
+      if (!messages || messages.length === 0) {
         ticketsDiv.innerHTML = '<div class="ticket">✨ No hay mensajes aún. ¡Sé el primero en dejar un billete!</div>';
       } else {
-        messages.forEach(msg => addTicketToDOM(msg.nombre, msg.mensaje));
+        messages.forEach(msg => {
+          addTicketToDOM(msg.nombre, msg.mensaje, msg.fecha);
+        });
       }
+      
     } catch(err) {
       console.error('Error al cargar mensajes:', err);
-      ticketsDiv.innerHTML = '<div class="ticket">⚠️ No se pudieron cargar los mensajes. Verifica tu conexión.</div>';
+      ticketsDiv.innerHTML = `
+        <div class="ticket" style="background: #f8d7da; color: #721c24; border-left-color: #721c24;">
+          <strong>⚠️ Error de conexión</strong><br>
+          No se pudieron cargar los mensajes. Verifica tu conexión o configuración de Google Sheets.
+          <br><small>Error: ${escapeHtml(err.message)}</small>
+        </div>
+      `;
     }
   }
-  
-  async function sendMessage(name, message) {
+
+  async function sendMessage(nombre, mensaje) {
     try {
-      await fetch(API_URL, {
+      // Mostrar estado de carga
+      const originalBtnText = sendBtn.innerHTML;
+      sendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
+      sendBtn.disabled = true;
+      
+      const response = await fetch(API_URL, {
         method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ nombre: name, mensaje: message })
+        body: JSON.stringify({ 
+          nombre: nombre.trim(), 
+          mensaje: mensaje.trim() 
+        })
       });
-      // Pequeña espera y recarga la lista (Google Apps Script puede tardar unos segundos en actualizar)
-      setTimeout(loadMessages, 800);
+      
+      const result = await response.json();
+      
+      if (result.success === false) {
+        throw new Error(result.error || 'Error al guardar');
+      }
+      
+      // Éxito: recargar mensajes
+      await loadMessages();
+      
+      // Mostrar confirmación temporal
+      const tempMsg = document.createElement('div');
+      tempMsg.className = 'ticket';
+      tempMsg.style.background = '#d4edda';
+      tempMsg.style.color = '#155724';
+      tempMsg.style.borderLeftColor = '#155724';
+      tempMsg.innerHTML = '✅ ¡Mensaje enviado con éxito! Gracias por tu billete.';
+      ticketsDiv.insertBefore(tempMsg, ticketsDiv.firstChild);
+      setTimeout(() => tempMsg.remove(), 3000);
+      
     } catch(err) {
       console.error('Error al enviar mensaje:', err);
-      alert('Hubo un problema al enviar el mensaje. Intenta de nuevo.');
+      alert('❌ Error al enviar: ' + err.message + '\nIntenta de nuevo más tarde.');
+    } finally {
+      sendBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Dejar billete en estación';
+      sendBtn.disabled = false;
     }
   }
-  
-  sendBtn.addEventListener('click', () => {
-    let name = nameInput.value.trim();
-    let message = msgInput.value.trim();
-    if(!message) { alert("Escribe un mensaje"); return; }
-    if(!name) name = "Viajero anónimo";
-    sendMessage(name, message);
+
+  // Evento de envío
+  sendBtn.addEventListener('click', async () => {
+    let nombre = nameInput.value.trim();
+    let mensaje = msgInput.value.trim();
+    
+    if (!mensaje) {
+      alert("✏️ Escribe un mensaje en el billete antes de enviar");
+      msgInput.focus();
+      return;
+    }
+    
+    if (!nombre) {
+      nombre = "Viajero anónimo";
+      nameInput.value = nombre;
+    }
+    
+    await sendMessage(nombre, mensaje);
     msgInput.value = "";
     nameInput.value = "Amigo Petrowax";
   });
-  
+
+  // Cargar mensajes al iniciar
   loadMessages();
+  
+  // Recargar cada 30 segundos
+  setInterval(loadMessages, 30000);
 </script>
 </body>
 </html>
