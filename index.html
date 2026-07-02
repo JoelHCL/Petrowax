@@ -1,472 +1,508 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>Petrowax · Estaciones de Éxito</title>
-  <!-- Google Fonts + Font Awesome -->
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { background: #1e1b16; font-family: 'Playfair Display', serif; color: #e8e0d0; scroll-behavior: smooth; }
-    :root { --track-brown: #2c241a; --rust-red: #a5532b; --gold-brass: #c8a86b; --smoke-gray: #4a3f35; --oil-black: #1e1b16; --iron-dark: #3e362e; --brass-light: #e2c28b; }
-    ::-webkit-scrollbar { width: 10px; background: #2c241a; }
-    ::-webkit-scrollbar-thumb { background: var(--gold-brass); border-radius: 10px; }
-    .container { max-width: 1400px; margin: 0 auto; padding: 2rem 2rem 0 2rem; }
-    .locomotive-header { display: flex; justify-content: space-between; align-items: baseline; border-bottom: 3px solid var(--gold-brass); padding-bottom: 1rem; margin-bottom: 1rem; flex-wrap: wrap; }
-    .title h1 { font-size: 2.5rem; font-weight: 900; letter-spacing: 2px; color: var(--brass-light); text-shadow: 2px 2px 0px #2c1a0e; }
-    .title p { font-family: 'Space Mono', monospace; font-size: 0.85rem; letter-spacing: 2px; color: var(--gold-brass); }
-    .sound-control button { background: var(--track-brown); border: 1px solid var(--gold-brass); color: var(--brass-light); padding: 8px 16px; font-family: 'Space Mono', monospace; cursor: pointer; transition: all 0.2s; border-radius: 30px; }
-    .sound-control button:hover { background: var(--gold-brass); color: #1e1b16; }
-    .countdown-wrapper { background: rgba(30,27,22,0.8); border-radius: 60px; padding: 0.8rem 1.5rem; margin: 1rem 0 2rem 0; text-align: center; border: 1px solid var(--gold-brass); backdrop-filter: blur(4px); }
-    .countdown-title { font-family: 'Space Mono', monospace; font-size: 0.9rem; letter-spacing: 2px; color: var(--brass-light); margin-bottom: 0.5rem; }
-    .countdown-timer { display: flex; justify-content: center; gap: 1.5rem; flex-wrap: wrap; }
-    .countdown-block { background: #1e1b16; padding: 0.5rem 1rem; border-radius: 20px; min-width: 80px; border-bottom: 2px solid var(--gold-brass); }
-    .countdown-number { font-size: 2rem; font-weight: bold; font-family: 'Space Mono', monospace; color: var(--brass-light); }
-    .countdown-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; }
-    section { margin-bottom: 5rem; background: rgba(30,27,22,0.7); border-left: 6px solid var(--gold-brass); padding: 2rem 2rem; border-radius: 0 24px 24px 0; backdrop-filter: blur(2px); }
-    .section-title { font-size: 2rem; font-weight: 700; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 12px; border-bottom: 2px dashed var(--gold-brass); display: inline-block; padding-right: 2rem; }
-    .section-title i { font-size: 2rem; color: var(--gold-brass); }
-    .estaciones-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px,1fr)); gap: 1.8rem; margin: 2rem 0; }
-    .estacion-card { background: #2c241a; text-align: left; padding: 1rem; border-radius: 20px; cursor: pointer; transition: all 0.2s ease; border-bottom: 3px solid var(--gold-brass); display: flex; flex-direction: column; gap: 8px; }
-    .estacion-card i { font-size: 2rem; color: var(--gold-brass); margin-bottom: 0.2rem; }
-    .estacion-card h4 { font-family: 'Space Mono', monospace; font-weight: bold; font-size: 1.2rem; margin: 5px 0; }
-    .estacion-card p, .estacion-card small { font-size: 0.75rem; font-family: 'Space Mono', monospace; line-height: 1.3; color: #d4ccb8; }
-    .estacion-card:hover { background: #4a3f35; transform: translateY(-5px); }
-    .foto-modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.9); justify-content: center; align-items: center; z-index: 1000; }
-    .foto-modal img { max-width: 80%; max-height: 80%; border: 5px solid var(--gold-brass); border-radius: 20px; }
-    .birthday-modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.85); justify-content: center; align-items: center; z-index: 1100; backdrop-filter: blur(5px); }
-    .birthday-card { background: linear-gradient(145deg,#2c241a,#1e1b16); border:3px solid var(--gold-brass); border-radius:60px; padding:2.5rem 3rem; text-align:center; max-width:90%; width:500px; box-shadow:0 0 50px rgba(200,168,107,0.5); animation:fadeInUp 0.5s ease; position:relative; overflow:hidden; }
-    .birthday-card h2 { font-family:'Playfair Display',serif; font-size:2.2rem; color:var(--brass-light); margin-bottom:1rem; }
-    .birthday-card p { font-size:1.6rem; font-weight:bold; font-family:'Space Mono',monospace; color:#ffd966; text-shadow:0 0 5px #a5532b; }
-    .sparkle { position:absolute; width:6px; height:6px; background:radial-gradient(circle,gold,orange); border-radius:50%; pointer-events:none; animation:sparkleAnim 1s ease-out forwards; }
-    @keyframes sparkleAnim { 0%{transform:scale(0) rotate(0deg); opacity:1;} 100%{transform:scale(1.5) rotate(180deg); opacity:0;} }
-    @keyframes fadeInUp { from{opacity:0; transform:translateY(40px);} to{opacity:1; transform:translateY(0);} }
-    .close-birthday { margin-top:1.5rem; background:var(--gold-brass); border:none; padding:0.5rem 1.5rem; font-family:'Space Mono',monospace; border-radius:40px; cursor:pointer; font-weight:bold; }
-    .contador-ruta { margin-top:1rem; font-family:'Space Mono',monospace; background:#1e1b16; display:inline-block; padding:0.5rem 1rem; border-radius:40px; font-size:0.9rem; }
-    .timeline { position:relative; margin:2rem 0; padding-left:2rem; }
-    .timeline::before { content:''; position:absolute; left:10px; top:0; bottom:0; width:3px; background:var(--gold-brass); }
-    .timeline-item { margin-bottom:2rem; position:relative; padding-left:2rem; }
-    .timeline-item::before { content:'🕯️'; position:absolute; left:-12px; top:0; background:var(--track-brown); border-radius:50%; font-size:1.2rem; }
-    .timeline-year { font-family:'Space Mono',monospace; font-weight:bold; color:var(--brass-light); font-size:1.2rem; }
-    .galeria { display:grid; grid-template-columns:repeat(auto-fill, minmax(220px,1fr)); gap:1.8rem; margin-top:2rem; }
-    .item-galeria { background:#2c241a; border-radius:24px; overflow:hidden; cursor:pointer; transition:0.2s; border:1px solid var(--gold-brass); text-align:center; }
-    .item-galeria img { width:100%; height:180px; object-fit:cover; display:block; border-bottom:2px solid var(--gold-brass); }
-    .item-galeria p { padding:0.8rem; font-family:'Space Mono',monospace; font-weight:bold; font-size:0.9rem; color:var(--brass-light); }
-    .item-galeria:hover { transform:scale(1.02); border-color:var(--brass-light); }
-    .cabina-panel { background:#2c241a; padding:1.5rem; border-radius:30px; display:flex; flex-wrap:wrap; gap:2rem; align-items:center; justify-content:space-between; }
-    .velocimetro { text-align:center; background:#1e1b16; padding:1rem; border-radius:50%; width:180px; height:180px; display:flex; flex-direction:column; justify-content:center; border:3px solid var(--gold-brass); }
-    .velocimetro span { font-size:3rem; font-family:'Space Mono',monospace; font-weight:bold; color:var(--brass-light); }
-    .controles { flex:1; min-width:200px; }
-    .slider-container { margin:1rem 0; }
-    input[type="range"] { width:100%; background:var(--track-brown); accent-color:var(--gold-brass); }
-    .whistle-btn { background:var(--rust-red); border:none; padding:12px 25px; font-family:'Space Mono',monospace; font-weight:bold; color:#fff; border-radius:40px; cursor:pointer; margin-top:1rem; transition:0.1s linear; }
-    .whistle-btn:active { transform:scale(0.96); }
-    .track-animation { margin-top:1.5rem; background:#3e362e; height:50px; border-radius:30px; overflow:hidden; position:relative; }
-    .train-move { position:absolute; bottom:5px; font-size:2.2rem; transition:left 0.1s linear; left:0; }
-    .mensajes-container { display:flex; flex-wrap:wrap; gap:1rem; margin:1.5rem 0; max-height:250px; overflow-y:auto; background:#1e1b16; padding:1rem; border-radius:20px; }
-    .ticket { background:#fef0cf; color:#2c241a; padding:0.8rem; border-radius:12px; font-family:'Space Mono',monospace; width:100%; border-left:8px solid var(--rust-red); box-shadow:2px 2px 0px rgba(0,0,0,0.2); }
-    .form-boletin input, .form-boletin textarea { width:100%; margin:0.5rem 0; padding:0.7rem; background:#2c241a; border:1px solid var(--gold-brass); color:#e8e0d0; font-family:'Space Mono',monospace; border-radius:12px; }
-    .form-boletin button { background:var(--gold-brass); border:none; padding:0.7rem 1.5rem; font-weight:bold; font-family:'Space Mono',monospace; cursor:pointer; border-radius:30px; }
-    footer { text-align:center; padding:2rem 0; border-top:1px solid var(--gold-brass); font-size:0.8rem; margin-top:2rem; }
-    @media (max-width:800px) { .container { padding:1rem; } .section-title { font-size:1.5rem; } .velocimetro { width:130px; height:130px; } .velocimetro span { font-size:2rem; } .birthday-card { padding:1.5rem; } .birthday-card p { font-size:1.2rem; } .countdown-block { min-width:60px; } .countdown-number { font-size:1.5rem; } }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ishikawa · Análisis de causa raíz — Petrowax</title>
+<style>
+  :root{
+    --paper:#FBF8F2; --card:#FFFFFF; --ink:#1C2A33; --ink-soft:#51606A; --muted:#8A96A0;
+    --line:#E5DECF; --line-2:#D8D0BF;
+    --wax:#B9750F; --wax-bg:#FBEFD6;
+    --head:#B23A1E; --head-bg:#FAE7E0;
+    --ok:#0F6E56; --ok-bg:#E4F4EE;
+    --sup:#A32D2D; --sup-bg:#FBEBEB;
+    --radius:10px;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{background:var(--paper);color:var(--ink);font-family:var(--sans);line-height:1.5;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1080px;margin:0 auto;padding:22px 20px 80px}
+
+  header.app{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;border-bottom:2px solid var(--ink);padding-bottom:12px;margin-bottom:4px}
+  .brand{font-weight:700;letter-spacing:.14em;font-size:13px;color:var(--ink);text-transform:uppercase}
+  h1{font-size:24px;letter-spacing:-.01em;margin:2px 0 0;font-weight:650}
+  .sub{color:var(--ink-soft);font-size:13px;margin-top:2px}
+  .toolbar{display:flex;flex-wrap:wrap;gap:8px}
+  button{font-family:inherit;font-size:13px;cursor:pointer;border:1px solid var(--line-2);background:var(--card);color:var(--ink);
+    border-radius:8px;padding:8px 12px;display:inline-flex;align-items:center;gap:6px;transition:.12s}
+  button:hover{border-color:var(--ink);background:#fff}
+  button.primary{background:var(--ink);color:#fff;border-color:var(--ink)}
+  button.primary:hover{background:#000}
+  button.ghost{background:transparent}
+  button.danger:hover{border-color:var(--sup);color:var(--sup)}
+  .saved{font-size:12px;color:var(--muted);align-self:center}
+
+  .meta{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0 14px}
+  .meta .full{grid-column:1/-1}
+  .field label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-soft);margin-bottom:3px;font-weight:600}
+  .field input{width:100%;border:1px solid var(--line-2);border-radius:7px;padding:8px 9px;font-family:inherit;font-size:14px;background:#fff;color:var(--ink)}
+  .field input:focus{outline:2px solid var(--wax);outline-offset:-1px}
+  .field.folio input{font-family:var(--mono)}
+
+  .effect-row{display:flex;gap:10px;align-items:stretch;margin:6px 0 18px}
+  .effect-row .field{flex:1}
+  .effect-row .field input{border:2px solid var(--head);background:var(--head-bg);font-weight:600;font-size:15px}
+  .lock{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;padding:0 4px;color:var(--head);font-weight:600}
+
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:14px 14px 10px;margin-bottom:18px}
+  .panel-title{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-soft);font-weight:700;margin:0 0 10px}
+
+  /* fishbone */
+  .fish{width:100%;height:auto;display:block}
+  .fish text{font-family:var(--sans)}
+
+  /* verification meter */
+  .meter{display:flex;align-items:center;gap:14px;margin-top:8px;flex-wrap:wrap}
+  .bar{flex:1;min-width:180px;height:10px;background:var(--sup-bg);border-radius:6px;overflow:hidden;border:1px solid var(--line)}
+  .bar > i{display:block;height:100%;background:var(--ok);width:0%;transition:width .25s}
+  .meter .read{font-size:13px;color:var(--ink-soft)}
+  .meter .rule{font-size:12px;color:var(--sup);font-weight:600}
+
+  /* cause cards */
+  .m-card{border:1px solid var(--line);border-radius:var(--radius);margin-bottom:12px;overflow:hidden;background:var(--card)}
+  .m-head{display:flex;align-items:center;gap:10px;padding:10px 12px;background:#FCFAF5;border-bottom:1px solid var(--line);cursor:pointer}
+  .m-dot{width:10px;height:10px;border-radius:50%;background:var(--wax);flex:none}
+  .m-name{font-weight:650;font-size:15px}
+  .m-count{font-size:12px;color:var(--muted);margin-left:auto;font-variant-numeric:tabular-nums}
+  .m-guide{font-size:12px;color:var(--muted);padding:6px 12px 0}
+  .rows{padding:8px 12px 12px}
+  .col-key{display:grid;grid-template-columns:1.7fr 130px 1.7fr 30px;gap:8px;font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);padding:0 12px 4px;font-weight:600}
+  .cblock{border:1px solid var(--line);border-radius:8px;padding:8px;margin-bottom:9px;background:#FCFBF8}
+  .crow{display:grid;grid-template-columns:1.7fr 130px 1.7fr 30px;gap:8px;align-items:start}
+  .crow textarea,.crow input,.crow select{font-family:inherit;font-size:13px;border:1px solid var(--line-2);border-radius:6px;padding:6px 7px;background:#fff;color:var(--ink);width:100%;resize:vertical}
+  .crow textarea{min-height:34px;line-height:1.35}
+  .crow select{height:34px}
+  .crow select.verificada{background:var(--ok-bg);color:var(--ok);border-color:var(--ok);font-weight:600}
+  .crow select.supuesta{background:var(--sup-bg);color:var(--sup);border-color:var(--sup);font-weight:600}
+  .crow .rm{border:none;background:transparent;color:var(--muted);font-size:16px;padding:6px;height:34px}
+  .crow .rm:hover{color:var(--sup)}
+  .sublist{margin:6px 0 2px 8px;border-left:2px solid var(--line-2);padding-left:10px}
+  .subrow{display:flex;gap:6px;align-items:center;margin-bottom:5px}
+  .subrow .arrow{color:var(--muted);font-size:13px;flex:none}
+  .subrow input{flex:1;border:1px solid var(--line-2);border-radius:6px;padding:5px 7px;font-size:12.5px;font-family:inherit;color:var(--ink);background:#fff}
+  .subrow .rm{border:none;background:transparent;color:var(--muted);font-size:14px;padding:2px 5px;cursor:pointer}
+  .subrow .rm:hover{color:var(--sup)}
+  .add-sub{font-size:12px;color:var(--ink-soft);background:transparent;border:1px dashed var(--line-2);border-radius:6px;padding:4px 9px;margin:2px 0 2px 10px}
+  .add-sub:hover{border-color:var(--wax);color:var(--wax)}
+  .add{font-size:13px;color:var(--wax);border:1px dashed var(--line-2);background:transparent;width:100%;justify-content:center;padding:7px}
+  .add:hover{border-color:var(--wax);background:var(--wax-bg)}
+
+  /* prioritization */
+  .prio table{width:100%;border-collapse:collapse;font-size:13px}
+  .prio th,.prio td{border:1px solid var(--line);padding:7px 8px;text-align:left;vertical-align:top}
+  .prio th{background:#FCFAF5;font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-soft)}
+  .prio input{width:100%;border:none;background:transparent;font-family:inherit;font-size:13px;color:var(--ink)}
+  .prio input:focus{outline:1px solid var(--wax)}
+  .empty{color:var(--muted);font-size:13px;font-style:italic;padding:8px 2px}
+
+  .hint{font-size:12px;color:var(--muted);margin-top:8px}
+  .footnote{font-size:11.5px;color:var(--muted);border-top:1px solid var(--line);margin-top:24px;padding-top:10px}
+
+  @media (max-width:760px){
+    .meta{grid-template-columns:repeat(2,1fr)}
+    .crow,.col-key{grid-template-columns:1fr 1fr;}
+    .col-key{display:none}
+  }
+
+  @media print{
+    @page{margin:14mm}
+    body{background:#fff}
+    .wrap{max-width:none;padding:0}
+    .toolbar,.saved,.add,.crow .rm,.hint,.m-head{cursor:auto}
+    .no-print,.toolbar,.add,.crow .rm{display:none !important}
+    .panel,.m-card,.prio table{break-inside:avoid}
+    button{display:none}
+    .crow textarea,.crow input,.crow select{border:1px solid #bbb;background:#fff !important;color:#000 !important}
+    header.app{border-color:#000}
+  }
+</style>
 </head>
 <body>
-<div class="container">
-  <div class="locomotive-header">
-    <div class="title">
-      <h1>🕯️ PETROWAX · ESTACIONES DE ÉXITO</h1>
-      <p>Red de sucursales · 29 años iluminando tus proyectos</p>
+<div class="wrap">
+
+  <header class="app">
+    <div>
+      <div class="brand">Petrowax México · Mesa de Control</div>
+      <h1>Análisis de causa raíz — Ishikawa</h1>
+      <div class="sub">Proceso de llenado · 6M (Mano de obra · Método · Máquina · Material · Medición · Medio ambiente)</div>
     </div>
-    <div class="sound-control">
-      <button id="toggleSoundBtn"><i class="fas fa-volume-up"></i> Silbido ambiente</button>
+    <div class="toolbar no-print">
+      <button class="ghost" id="btn-import">Importar</button>
+      <button class="ghost" id="btn-export">Exportar JSON</button>
+      <button class="ghost danger" id="btn-reset">Limpiar</button>
+      <button class="primary" id="btn-print">Imprimir / PDF</button>
+      <span class="saved" id="saved"></span>
+    </div>
+  </header>
+
+  <div class="meta">
+    <div class="field"><label>Proceso / línea</label><input data-meta="proceso" placeholder="Ej. Llenado línea 2"></div>
+    <div class="field"><label>Fecha</label><input data-meta="fecha" type="date"></div>
+    <div class="field"><label>Responsable del análisis</label><input data-meta="responsable" placeholder="Nombre"></div>
+    <div class="field folio"><label>Folio</label><input data-meta="folio" placeholder="F-MC-___ Rev.0"></div>
+    <div class="field full"><label>Participantes</label><input data-meta="participantes" placeholder="Quiénes participaron en el análisis"></div>
+  </div>
+
+  <div class="effect-row">
+    <div class="field">
+      <label>Efecto / problema — debe ser concreto y medible <span class="lock">● candado 1</span></label>
+      <input id="efecto" placeholder="Ej. X% de envases fuera de peso especificado (±__ g) en la línea __ durante __">
     </div>
   </div>
 
-  <!-- CONTADOR REGRESIVO ANUAL (27 de marzo) -->
-  <div class="countdown-wrapper">
-    <div class="countdown-title"><i class="fas fa-hourglass-half"></i> Próxima parada: 27 de marzo · Celebración anual</div>
-    <div class="countdown-timer" id="countdownTimer">
-      <div class="countdown-block"><span class="countdown-number" id="days">00</span><div class="countdown-label">días</div></div>
-      <div class="countdown-block"><span class="countdown-number" id="hours">00</span><div class="countdown-label">horas</div></div>
-      <div class="countdown-block"><span class="countdown-number" id="minutes">00</span><div class="countdown-label">minutos</div></div>
-      <div class="countdown-block"><span class="countdown-number" id="seconds">00</span><div class="countdown-label">segundos</div></div>
+  <div class="panel">
+    <p class="panel-title">Diagrama</p>
+    <svg class="fish" id="fish" viewBox="0 0 940 680" role="img" aria-label="Diagrama de Ishikawa del proceso de llenado"></svg>
+    <div class="meter">
+      <div class="bar"><i id="bar"></i></div>
+      <span class="read" id="meter-read">0 de 0 causas verificadas</span>
+      <span class="rule">Solo las causas verificadas pasan a acciones.</span>
     </div>
   </div>
 
-  <!-- VAGÓN 1: EL ANDÉN con Sucursales reales -->
-  <section id="anden">
-    <div class="section-title"><i class="fas fa-map-marked-alt"></i> Estaciones Petrowax · Nuestra Red Nacional</div>
-    <div class="estaciones-grid" id="estacionesGrid"></div>
-    <div class="contador-ruta"><i class="fas fa-train"></i> 6 estaciones operando · 29 años de trayectoria · Presentes en CDMX, Jalisco, Edomex, QRoo, Puebla</div>
-  </section>
+  <div class="panel">
+    <p class="panel-title">Causas por categoría — candado 2: marca cada una Verificada o Supuesta</p>
+    <div class="col-key"><span>Causa</span><span>Estado</span><span>Evidencia / dato</span><span></span></div>
+    <div id="cards"></div>
+  </div>
 
-  <!-- VAGÓN 2: EL MAQUINISTA (Bitácora con años reales) -->
-  <section id="maquinista">
-    <div class="section-title"><i class="fas fa-history"></i> Bitácora del Maquinista · 29 años sobre rieles</div>
-    <div class="timeline">
-      <div class="timeline-item"><div class="timeline-year">1997 · Fundación</div><p>Nace Petrowax en la Ciudad de México, iniciando operaciones con insumos de calidad para velas y veladoras.</p></div>
-      <div class="timeline-item"><div class="timeline-year">2005 · Primera expansión</div><p>Apertura de sucursal en Guadalajara, conectando con el occidente del país.</p></div>
-      <div class="timeline-item"><div class="timeline-year">2015 · Llegada a Toluca y Cancún</div><p>Consolidación nacional con nuevas estaciones en el Estado de México y el Caribe mexicano.</p></div>
-      <div class="timeline-item"><div class="timeline-year">2023 · Sucursal Puebla</div><p>Incorporación de la estación Puebla para atender el centro del país.</p></div>
-      <div class="timeline-item"><div class="timeline-year">2024 · Nueva estación Tonalá</div><p>12 de septiembre: apertura en Tonalá, Jalisco, fortaleciendo la red.</p></div>
-      <div class="timeline-item"><div class="timeline-year">2025 · 29 Aniversario</div><p>"Iluminando tus proyectos" — Celebramos 29 años de éxito, unión del equipo y confianza de clientes y colaboradores.</p></div>
-    </div>
-  </section>
+  <div class="panel prio">
+    <p class="panel-title">Priorización y acciones — solo causas verificadas</p>
+    <div id="prio"></div>
+    <p class="hint">Ordena por impacto (Pareto). Una causa Supuesta no genera acción correctiva hasta verificarse con dato.</p>
+  </div>
 
-  <!-- VAGÓN 3: LA COLECCIÓN (Productos con imágenes reales) -->
-  <section id="coleccion">
-    <div class="section-title"><i class="fas fa-boxes"></i> La Colección · Productos que iluminan</div>
-    <div class="galeria" id="galeriaColeccion"></div>
-  </section>
-
-  <!-- VAGÓN 4: CABINA DE CONTROL (Simulador) -->
-  <section id="cabina">
-    <div class="section-title"><i class="fas fa-tachometer-alt"></i> Cabina de control · Energía en movimiento</div>
-    <div class="cabina-panel">
-      <div class="velocimetro">
-        <span id="speedValue">0</span>
-        <small>km/h · innovación</small>
-      </div>
-      <div class="controles">
-        <div class="slider-container">
-          <label>Acelerador de proyectos <i class="fas fa-arrow-up"></i></label>
-          <input type="range" id="throttle" min="0" max="120" value="0" step="1">
-        </div>
-        <button id="whistleBtn" class="whistle-btn"><i class="fas fa-train"></i> ¡Pitar! Silbato de estación</button>
-      </div>
-    </div>
-    <div class="track-animation" id="trackAnim">
-      <div class="train-move" id="movingTrain">🕯️🚂</div>
-    </div>
-    <p style="margin-top: 12px; font-size: 0.8rem; text-align: center;">*Acelera para ver cómo avanza la locomotora Petrowax por sus estaciones</p>
-  </section>
-
-  <!-- VAGÓN 5: BOLETÍN (Mensajes sorpresa como billetes) con Google Sheets -->
-  <section id="boletin">
-    <div class="section-title"><i class="fas fa-ticket-alt"></i> El Boletín · Mensajes para el maquinista</div>
-    <div id="ticketsContainer" class="mensajes-container">
-      <div class="ticket"><strong>Cargando mensajes...</strong></div>
-    </div>
-    <div class="form-boletin">
-      <input type="text" id="msgName" placeholder="Tu nombre" value="Amigo Petrowax">
-      <textarea id="msgText" rows="2" placeholder="Escribe tu mensaje en forma de billete..."></textarea>
-      <button id="sendTicketBtn"><i class="fas fa-paper-plane"></i> Dejar billete en estación</button>
-    </div>
-  </section>
-
-  <footer>
-    <i class="fas fa-candle-holder"></i> Petrowax · 29 años iluminando tus proyectos · 6 estaciones a tu servicio
-  </footer>
-</div>
-
-<!-- Modal para imágenes de sucursales -->
-<div id="imageModal" class="foto-modal" style="display: none;">
-  <img id="modalImg" src="" alt="ampliación">
-  <div style="position: absolute; top:20px; right:40px; cursor:pointer; color:white; font-size:3rem;" onclick="closeModal()">&times;</div>
-</div>
-
-<!-- Modal especial para cumpleaños (Puebla) -->
-<div id="birthdayModal" class="birthday-modal">
-  <div class="birthday-card">
-    <h2>🎉 ¡FELIZ CUMPLEAÑOS! 🎉</h2>
-    <p>Contador José Lara</p>
-    <button class="close-birthday" id="closeBirthdayBtn">Cerrar y seguir celebrando 🚂</button>
+  <div class="footnote">
+    Formato controlado — Mesa de Control. Los datos se guardan en este navegador (este equipo). Usa <b>Exportar JSON</b> para respaldar o pasar el archivo a otra persona, e <b>Importar</b> para retomarlo. Para la versión formal, usa <b>Imprimir / PDF</b>.
   </div>
 </div>
+
+<input type="file" id="file-input" accept="application/json" style="display:none">
 
 <script>
-  // ==================== CONFIGURACIÓN ====================
-  // URL DE GOOGLE APPS SCRIPT (ACTUALIZADA)
-  const API_URL = "https://script.google.com/macros/s/AKfycby82C5a_0JsZ2_QLfLkt0yyx_86LkM-M9XAPEiQFmqM6BAef67EpumkSCyhHPAfPJSv/exec";
-  
-  // ==================== CONTADOR 27 MARZO ====================
-  function updateCountdown() {
-    const now = new Date();
-    const currentYear = now.getFullYear();
-    let targetDate = new Date(currentYear, 2, 27);
-    if (now > targetDate) targetDate = new Date(currentYear + 1, 2, 27);
-    const diff = targetDate - now;
-    if (diff <= 0) return;
-    document.getElementById('days').innerText = Math.floor(diff / (1000*60*60*24)).toString().padStart(2,'0');
-    document.getElementById('hours').innerText = Math.floor((diff % 86400000) / 3600000).toString().padStart(2,'0');
-    document.getElementById('minutes').innerText = Math.floor((diff % 3600000) / 60000).toString().padStart(2,'0');
-    document.getElementById('seconds').innerText = Math.floor((diff % 60000) / 1000).toString().padStart(2,'0');
-  }
-  updateCountdown();
-  setInterval(updateCountdown, 1000);
+const CATS = [
+  {key:'mano',     name:'Mano de obra',    side:'top',    ax:210, bx:150, guide:'Capacitación, experiencia, rotación de turno, carga de trabajo, supervisión.'},
+  {key:'metodo',   name:'Método',          side:'top',    ax:390, bx:330, guide:'Instructivo, parámetros definidos, secuencia, ajustes manuales, cambio de producto.'},
+  {key:'maquina',  name:'Máquina',         side:'top',    ax:570, bx:510, guide:'Boquillas, bombas, dosificador, calibración, mantenimiento, paros, desgaste.'},
+  {key:'material', name:'Material',        side:'bottom', ax:210, bx:150, guide:'Variabilidad de la cera/parafina, lote, temperatura/viscosidad, envases, contaminación.'},
+  {key:'medicion', name:'Medición',        side:'bottom', ax:390, bx:330, guide:'Báscula/sensor calibrado, frecuencia de muestreo, criterio de aceptación, registro en NetSuite.'},
+  {key:'medio',    name:'Medio ambiente',  side:'bottom', ax:570, bx:510, guide:'Temperatura/humedad de planta, limpieza, espacio, iluminación, condiciones del turno.'},
+];
+const KEY='petrowax_ishikawa_v1';
+const blankItem=()=>({id:crypto.randomUUID?crypto.randomUUID():String(Math.random()),
+  causa:'',subs:[],estado:'supuesta',evidencia:'',accion:'',responsable:'',fecha:''});
 
-  // ==================== SUCURSALES REALES ====================
-  const sucursalesReales = [
-    { nombre:"Estación Central CDMX (Matriz)", direccion:"Prof. Otilio Montaño No. 38, Col. Zona Urbana Ejidal Santa María Aztahuacan, Alcaldía Iztapalapa, C.P. 09570, CDMX", horario:"Lun-Vie: 9:00-13:00, 15:00-17:00 | Sáb: 9:00-13:00", contacto:"Tel: 55 1546 6260 | WhatsApp: 55 4825 3364", imagen:"https://petrowax.com.mx/wp-content/uploads/2024/12/PETROWAX-MATRIZ.jpg", icono:"fas fa-building", esEspecial:false },
-    { nombre:"Estación Guadalajara", direccion:"Av. 8 De Julio No. 2142 Int. 18, Col. San Sebastianito, Tlaquepaque, Jalisco, C.P. 45601", horario:"Lun-Vie: 9:00-13:00, 15:00-17:00 | Sáb: 9:00-13:00", contacto:"Tel: 33 3812 1910 | WhatsApp: 33 3171 3382", imagen:"https://petrowax.com.mx/wp-content/uploads/2024/12/PETROWAX_gdl.jpg", icono:"fas fa-train", esEspecial:false },
-    { nombre:"Estación Toluca", direccion:"Plan de Texca No. 217-B, Col. La Magdalena, Toluca de Lerdo, Estado de México, C.P. 50190", horario:"Lun-Vie: 9:00-14:00, 15:00-17:00 | Sáb: 9:00-13:00", contacto:"Tel: 722 180 2616 | WhatsApp: 55 4500 1307", imagen:"https://petrowax.com.mx/wp-content/uploads/2024/12/PETROWAX_toluca.jpg", icono:"fas fa-mountain", esEspecial:false },
-    { nombre:"Estación Cancún", direccion:"Plaza Galerías, Super Manzana 2, Manzana 1, Lotes 18 y 20 Local 10, Benito Juárez, Cancún, Q. Roo, C.P. 77500", horario:"Lun-Vie: 10:00-14:00, 15:00-17:00 | Sáb: 10:00-14:00", contacto:"Tel: 998 251 8965 | WhatsApp: 998 180 4348", imagen:"https://petrowax.com.mx/wp-content/uploads/2024/12/Captura-de-pantalla-2024-12-09-a-las-13.52.59.png", icono:"fas fa-umbrella-beach", esEspecial:false },
-    { nombre:"Estación Puebla", direccion:"Blvd. Ayuntamiento No. 6210, Col. Tepeyac, Puebla, Puebla, C.P. 72210", horario:"Lun-Vie: 9:00-14:00, 15:00-17:00 | Sáb: 9:00-14:00", contacto:"Tel: 222 408 0754 | WhatsApp: 222 771 9579", imagen:"", icono:"fas fa-church", esEspecial:true },
-    { nombre:"Estación Tonalá", direccion:"Av. Tonaltecas No 336, interior 3, Col. Tonalá Centro, Tonalá, Jalisco, C.P. 45400", horario:"Lun-Vie: 9:00-14:00, 15:00-18:00 | Sáb: 9:00-14:00", contacto:"WhatsApp: 33 2835 7290", imagen:"https://petrowax.com.mx/wp-content/uploads/2025/01/PETROWAX_tonala.jpg", icono:"fas fa-store", esEspecial:false }
-  ];
-  const gridEstaciones = document.getElementById('estacionesGrid');
-  function renderSucursales() {
-    gridEstaciones.innerHTML = '';
-    sucursalesReales.forEach(suc => {
-      const card = document.createElement('div');
-      card.className = 'estacion-card';
-      card.innerHTML = `<i class="${suc.icono}"></i><h4>${suc.nombre}</h4><p><i class="fas fa-location-dot"></i> ${suc.direccion}</p><small><i class="far fa-clock"></i> ${suc.horario}</small><small><i class="fas fa-phone-alt"></i> ${suc.contacto}</small>`;
-      card.addEventListener('click', () => { if(suc.esEspecial) showBirthdayMessage(); else openModal(suc.imagen, `Estación: ${suc.nombre}`); });
-      gridEstaciones.appendChild(card);
+let state = load() || freshState();
+normalize(state);
+function freshState(){
+  const c={}; CATS.forEach(k=>c[k.key]=[]);
+  return {meta:{proceso:'',fecha:'',responsable:'',folio:'',participantes:''},efecto:'',cats:c};
+}
+function normalize(st){
+  if(!st||!st.cats)return;
+  CATS.forEach(c=>{
+    if(!Array.isArray(st.cats[c.key]))st.cats[c.key]=[];
+    st.cats[c.key].forEach(it=>{
+      if(!('subs'in it)||!Array.isArray(it.subs)){
+        const old=(it.subcausa||'').trim();
+        it.subs= old?[old]:[];
+      }
+      it.subs=it.subs.filter(x=>typeof x==='string');
+      delete it.subcausa;
+      it.accion=it.accion||''; it.responsable=it.responsable||''; it.fecha=it.fecha||'';
     });
-  }
-  renderSucursales();
-
-  // ==================== MODALES ====================
-  const modalImg = document.getElementById('imageModal');
-  const modalImgElement = document.getElementById('modalImg');
-  function openModal(src) { modalImg.style.display = 'flex'; modalImgElement.src = src; }
-  window.closeModal = () => modalImg.style.display = 'none';
-  modalImg.addEventListener('click', (e) => { if(e.target === modalImg) closeModal(); });
-  const birthdayModal = document.getElementById('birthdayModal');
-  const closeBirthday = document.getElementById('closeBirthdayBtn');
-  function showBirthdayMessage() {
-    birthdayModal.style.display = 'flex';
-    for(let i=0;i<60;i++) createSparkle();
-    setTimeout(()=>{ if(birthdayModal.style.display === 'flex') birthdayModal.style.display = 'none'; }, 6000);
-  }
-  function createSparkle() {
-    const s = document.createElement('div');
-    s.className = 'sparkle';
-    s.style.left = Math.random() * window.innerWidth + 'px';
-    s.style.top = Math.random() * window.innerHeight + 'px';
-    s.style.position = 'fixed';
-    s.style.zIndex = '1200';
-    document.body.appendChild(s);
-    setTimeout(()=>s.remove(), 1000);
-  }
-  closeBirthday.addEventListener('click', ()=> birthdayModal.style.display = 'none');
-  birthdayModal.addEventListener('click', (e)=> { if(e.target === birthdayModal) birthdayModal.style.display = 'none'; });
-
-  // ==================== GALERÍA DE PRODUCTOS ====================
-  const productos = [
-    { nombre:"Fragancias premium", imagen:"https://petrowax.com.mx/wp-content/uploads/photo-gallery/vela_fragancias_misticas.jpg?bwg=1733858983", desc:"Fragancias para velas aromáticas" },
-    { nombre:"Ceras Polietilénicas", imagen:"https://petrowax.com.mx/wp-content/uploads/photo-gallery/cera-polietilenica-escamas2.jpg?bwg=1741040389", desc:"Productos industriales de alta calidad" },
-    { nombre:"Lumigel", imagen:"https://petrowax.com.mx/wp-content/uploads/photo-gallery/imported_from_media_libray/thumb/lumigel_02.jpg?bwg=1738007428", desc:"Cera transparente para creaciones únicas" },
-    { nombre:"Cera Terapéutica", imagen:"https://petrowax.com.mx/wp-content/uploads/photo-gallery/thumb/ind_spa.jpg?bwg=1733344365", desc:"La mejor cera relajante para SPA" }
-  ];
-  const galeria = document.getElementById('galeriaColeccion');
-  function renderProductos() {
-    galeria.innerHTML = '';
-    productos.forEach(p => {
-      const item = document.createElement('div');
-      item.className = 'item-galeria';
-      item.innerHTML = `<img src="${p.imagen}" alt="${p.nombre}" loading="lazy"><p>${p.nombre}</p>`;
-      item.addEventListener('click', () => openModal(p.imagen));
-      galeria.appendChild(item);
-    });
-  }
-  renderProductos();
-
-  // ==================== SONIDO AMBIENTE ====================
-  let audioCtx = null;
-  let isPlayingAmbient = false;
-  let ambientSource = null;
-  const toggleAmbient = document.getElementById('toggleSoundBtn');
-  function playAmbient() {
-    if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    if(ambientSource) try{ ambientSource.stop(); }catch(e){}
-    ambientSource = audioCtx.createBufferSource();
-    const bufSize = audioCtx.sampleRate * 2;
-    const buffer = audioCtx.createBuffer(1, bufSize, audioCtx.sampleRate);
-    const data = buffer.getChannelData(0);
-    for(let i=0;i<bufSize;i++) data[i] = (Math.sin(i/audioCtx.sampleRate*30)*0.2 + Math.random()*0.1)*0.3;
-    ambientSource.buffer = buffer;
-    ambientSource.loop = true;
-    const gain = audioCtx.createGain();
-    gain.gain.value = 0.2;
-    ambientSource.connect(gain);
-    gain.connect(audioCtx.destination);
-    ambientSource.start();
-  }
-  function stopAmbient() { if(ambientSource) { ambientSource.stop(); ambientSource = null; } }
-  toggleAmbient.addEventListener('click', () => {
-    if(!isPlayingAmbient) {
-      if(audioCtx && audioCtx.state === 'suspended') audioCtx.resume().then(()=>{ playAmbient(); isPlayingAmbient=true; toggleAmbient.innerHTML='<i class="fas fa-volume-mute"></i> Silenciar ambiente'; });
-      else { if(!audioCtx) audioCtx = new AudioContext(); audioCtx.resume().then(()=>{ playAmbient(); isPlayingAmbient=true; toggleAmbient.innerHTML='<i class="fas fa-volume-mute"></i> Silenciar ambiente'; }); }
-    } else { stopAmbient(); isPlayingAmbient=false; toggleAmbient.innerHTML='<i class="fas fa-volume-up"></i> Silbido ambiente'; }
   });
+}
+function load(){ try{const r=localStorage.getItem(KEY);return r?JSON.parse(r):null;}catch(e){return null;} }
+let saveTimer=null;
+function save(){
+  try{localStorage.setItem(KEY,JSON.stringify(state));
+    const s=document.getElementById('saved'); s.textContent='Guardado '+new Date().toLocaleTimeString();
+  }catch(e){ document.getElementById('saved').textContent='Sin guardado automático — usa Exportar'; }
+}
+function touch(){ clearTimeout(saveTimer); saveTimer=setTimeout(save,400); renderFishAndMeter(); }
 
-  // ==================== SILBATO REAL ====================
-  const whistleBtn = document.getElementById('whistleBtn');
-  const whistleSound = new Audio("https://cdn.pixabay.com/download/audio/2024/08/14/audio_7b6505f7d0.mp3?filename=lazychillzone-steam-whistle-1-232448.mp3");
-  whistleSound.preload = "auto";
-  function playWhistle() { whistleSound.currentTime = 0; whistleSound.play().catch(e=>console.log); document.querySelector('.cabina-panel').style.transform='translateX(2px)'; setTimeout(()=>document.querySelector('.cabina-panel').style.transform='',100); }
-  whistleBtn.addEventListener('click', playWhistle);
+/* ---------- meta + effect ---------- */
+document.querySelectorAll('[data-meta]').forEach(inp=>{
+  inp.value=state.meta[inp.dataset.meta]||'';
+  inp.addEventListener('input',()=>{state.meta[inp.dataset.meta]=inp.value;touch();});
+});
+const efecto=document.getElementById('efecto');
+efecto.value=state.efecto||'';
+efecto.addEventListener('input',()=>{state.efecto=efecto.value;touch();});
 
-  // ==================== CABINA ====================
-  const throttle = document.getElementById('throttle');
-  const speedSpan = document.getElementById('speedValue');
-  const train = document.getElementById('movingTrain');
-  let trainPos = 0;
-  function updateSpeed() { speedSpan.innerText = throttle.value; }
-  throttle.addEventListener('input', updateSpeed);
-  function animateTrain() {
-    if(parseInt(throttle.value) > 0) { trainPos = (trainPos + parseInt(throttle.value)/800) % 1.0; train.style.left = `calc(${trainPos*100}% - 10px)`; }
-    else { trainPos = 0; train.style.left = '0px'; }
-    requestAnimationFrame(animateTrain);
-  }
-  animateTrain(); updateSpeed();
+/* ---------- cause cards ---------- */
+const cardsEl=document.getElementById('cards');
+function renderCards(){
+  cardsEl.innerHTML='';
+  CATS.forEach(cat=>{
+    const items=state.cats[cat.key];
+    const card=document.createElement('div'); card.className='m-card';
+    const head=document.createElement('div'); head.className='m-head';
+    head.innerHTML=`<span class="m-dot"></span><span class="m-name">${cat.name}</span><span class="m-count">${items.length} causa(s)</span>`;
+    card.appendChild(head);
+    const guide=document.createElement('div'); guide.className='m-guide'; guide.textContent='Qué revisar: '+cat.guide;
+    card.appendChild(guide);
+    const rows=document.createElement('div'); rows.className='rows';
+    items.forEach(it=>rows.appendChild(rowEl(cat.key,it)));
+    const add=document.createElement('button'); add.className='add'; add.textContent='+ Agregar causa';
+    add.onclick=()=>{state.cats[cat.key].push(blankItem());expanded.add(cat.key);renderCards();renderPrio();touch();};
+    rows.appendChild(add);
+    card.appendChild(rows);
+    cardsEl.appendChild(card);
+  });
+}
+function rowEl(catKey,it){
+  const block=document.createElement('div'); block.className='cblock';
+  const row=document.createElement('div'); row.className='crow';
+  const causa=document.createElement('textarea'); causa.placeholder='Causa'; causa.value=it.causa;
+  causa.oninput=()=>{it.causa=causa.value;touch();updateCount(catKey);};
+  const sel=document.createElement('select');
+  sel.innerHTML='<option value="supuesta">Supuesta</option><option value="verificada">Verificada</option>';
+  sel.value=it.estado; sel.className=it.estado;
+  sel.onchange=()=>{it.estado=sel.value;sel.className=sel.value;touch();renderPrio();};
+  const ev=document.createElement('textarea'); ev.placeholder='Dato / evidencia'; ev.value=it.evidencia;
+  ev.oninput=()=>{it.evidencia=ev.value;touch();};
+  const rm=document.createElement('button'); rm.className='rm'; rm.title='Eliminar causa'; rm.textContent='✕';
+  rm.onclick=()=>{state.cats[catKey]=state.cats[catKey].filter(x=>x.id!==it.id);renderCards();renderPrio();touch();};
+  row.append(causa,sel,ev,rm);
+  block.appendChild(row);
 
-  // ==================== BOLETÍN CON GOOGLE SHEETS (VERSIÓN CORREGIDA) ====================
-  const ticketsDiv = document.getElementById('ticketsContainer');
-  const sendBtn = document.getElementById('sendTicketBtn');
-  const nameInput = document.getElementById('msgName');
-  const msgInput = document.getElementById('msgText');
-
-  function escapeHtml(str) {
-    if (!str) return '';
-    return str.replace(/[&<>]/g, function(m) {
-      if (m === '&') return '&amp;';
-      if (m === '<') return '&lt;';
-      if (m === '>') return '&gt;';
-      return m;
+  // sub-causas (anidadas)
+  const sublist=document.createElement('div'); sublist.className='sublist';
+  function paintSubs(){
+    sublist.innerHTML='';
+    it.subs.forEach((txt,j)=>{
+      const sr=document.createElement('div'); sr.className='subrow';
+      const ar=document.createElement('span'); ar.className='arrow'; ar.textContent='↳';
+      const inp=document.createElement('input'); inp.placeholder='Sub-causa (¿por qué de la causa?)'; inp.value=txt;
+      inp.oninput=()=>{it.subs[j]=inp.value;touch();};
+      const x=document.createElement('button'); x.className='rm'; x.title='Eliminar sub-causa'; x.textContent='✕';
+      x.onclick=()=>{it.subs.splice(j,1);paintSubs();touch();};
+      sr.append(ar,inp,x); sublist.appendChild(sr);
     });
   }
+  paintSubs();
+  block.appendChild(sublist);
+  const addSub=document.createElement('button'); addSub.className='add-sub'; addSub.textContent='+ sub-causa';
+  addSub.onclick=()=>{it.subs.push('');expanded.add(catKey);paintSubs();touch();};
+  block.appendChild(addSub);
+  return block;
+}
+function updateCount(catKey){
+  const idx=CATS.findIndex(c=>c.key===catKey);
+  const counts=document.querySelectorAll('.m-count');
+  if(counts[idx]) counts[idx].textContent=state.cats[catKey].length+' causa(s)';
+}
 
-  function formatDate(dateString) {
-    if (!dateString) return '';
-    try {
-      const date = new Date(dateString);
-      return date.toLocaleString('es-MX', { 
-        day: '2-digit', 
-        month: '2-digit', 
-        hour: '2-digit', 
-        minute: '2-digit' 
-      });
-    } catch(e) {
-      return '';
-    }
-  }
+/* ---------- prioritization (verified only) ---------- */
+const prioEl=document.getElementById('prio');
+function renderPrio(){
+  const verified=[];
+  CATS.forEach(c=>state.cats[c.key].forEach(it=>{if(it.estado==='verificada'&&it.causa.trim())verified.push({cat:c.name,it});}));
+  if(!verified.length){ prioEl.innerHTML='<div class="empty">Aún no hay causas verificadas. Marca al menos una como Verificada (con evidencia) para definir acciones.</div>'; return; }
+  let html='<table><thead><tr><th>Categoría</th><th>Causa raíz verificada</th><th>Acción correctiva</th><th>Responsable</th><th>Fecha</th></tr></thead><tbody>';
+  verified.forEach((v,i)=>{
+    html+=`<tr><td>${v.cat}</td><td>${escapeHtml(v.it.causa)}</td>`+
+      `<td><input data-i="${i}" data-f="accion" value="${escapeAttr(v.it.accion)}" placeholder="Acción"></td>`+
+      `<td><input data-i="${i}" data-f="responsable" value="${escapeAttr(v.it.responsable)}" placeholder="Nombre"></td>`+
+      `<td><input data-i="${i}" data-f="fecha" type="date" value="${escapeAttr(v.it.fecha)}"></td></tr>`;
+  });
+  html+='</tbody></table>';
+  prioEl.innerHTML=html;
+  prioEl.querySelectorAll('input').forEach(inp=>{
+    inp.addEventListener('input',()=>{const v=verified[+inp.dataset.i];v.it[inp.dataset.f]=inp.value;touch();});
+  });
+}
+function escapeHtml(s){return (s||'').replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]));}
+function escapeAttr(s){return (s||'').replace(/"/g,'&quot;').replace(/</g,'&lt;');}
 
-  function addTicketToDOM(nombre, mensaje, fecha) {
-    const ticket = document.createElement('div');
-    ticket.className = 'ticket';
-    ticket.innerHTML = `
-      <strong>✉️ ${escapeHtml(nombre)}</strong>
-      <p style="margin: 8px 0;">"${escapeHtml(mensaje)}"</p>
-      <small style="display: block; text-align: right; opacity: 0.7;">${formatDate(fecha)}</small>
-    `;
-    ticketsDiv.appendChild(ticket);
-    ticketsDiv.scrollTop = ticketsDiv.scrollHeight;
-  }
+/* ---------- fishbone svg ---------- */
+const fish=document.getElementById('fish');
+const expanded=new Set();
+function measureCat(items){
+  const blocks=[]; let h=0;
+  items.forEach(it=>{
+    const cl=wrapArr(it.causa||'(sin nombre)',20,99);
+    const boxH=cl.length*13+12;
+    const subs=(it.subs||[]);
+    const subBlocks=subs.map(sx=>wrapArr(sx||'(sin texto)',24,99));
+    let subsH=0; subBlocks.forEach(sb=>{ subsH+=sb.length*11+4; });
+    if(subs.length) subsH+=4;
+    const blockH=boxH+subsH+16;
+    blocks.push({it,cl,boxH,subBlocks});
+    h+=blockH;
+  });
+  return {blocks,h:Math.max(h,30)};
+}
+function renderFishAndMeter(){
+  const spineX1=60, spineX2=695;
+  // medir columnas
+  const meas={}; CATS.forEach(c=>{ meas[c.key]=measureCat(state.cats[c.key]); });
+  const open=k=>expanded.has(k);
+  const hTop=Math.max(60,...CATS.filter(c=>c.side==='top').map(c=>open(c.key)?meas[c.key].h:0));
+  const hBot=Math.max(60,...CATS.filter(c=>c.side==='bottom').map(c=>open(c.key)?meas[c.key].h:0));
+  const HEADER_TOP=46, HEADERH=36;
+  const topStart=HEADER_TOP+HEADERH+16;
+  const spineY=topStart+hTop+30;
+  const botStart=spineY+30;
+  const botHeaderY=botStart+hBot+14;
+  const canvasH=botHeaderY+HEADERH+34;
+  fish.setAttribute('viewBox',`0 0 940 ${canvasH}`);
 
-  async function loadMessages() {
-    try {
-      ticketsDiv.innerHTML = '<div class="ticket"><i class="fas fa-spinner fa-spin"></i> Cargando mensajes...</div>';
-      
-      const response = await fetch(API_URL);
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      
-      const messages = await response.json();
-      
-      // Verificar si hay error
-      if (messages.error) {
-        throw new Error(messages.error);
-      }
-      
-      ticketsDiv.innerHTML = '';
-      
-      if (!messages || messages.length === 0) {
-        ticketsDiv.innerHTML = '<div class="ticket">✨ No hay mensajes aún. ¡Sé el primero en dejar un billete!</div>';
-      } else {
-        messages.forEach(msg => {
-          addTicketToDOM(msg.nombre, msg.mensaje, msg.fecha);
+  let s=`<defs><marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#1C2A33" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>`;
+  s+=`<line x1="${spineX1}" y1="${spineY}" x2="${spineX2}" y2="${spineY}" stroke="#51606A" stroke-width="2.4" marker-end="url(#ar)"/>`;
+  // effect head
+  const eff=(state.efecto||'').trim();
+  const headFill=eff?'#FAE7E0':'#FFF4F0', headStroke='#B23A1E';
+  s+=`<rect x="705" y="${spineY-47}" width="222" height="94" rx="10" fill="${headFill}" stroke="${headStroke}" stroke-width="1.6"/>`;
+  s+=`<text x="816" y="${spineY-29}" text-anchor="middle" font-size="11" fill="#B23A1E" font-weight="700" letter-spacing="0.5">EFECTO</text>`;
+  s+=wrapText(eff||'Define el efecto (concreto y medible)', 816, spineY-11, 30, 3, eff?'#5A1F12':'#C98C80', eff?14:12, eff?'600':'400');
+  // chips
+  const folio=(state.meta.folio||'').trim()||'—';
+  s+=`<rect x="735" y="10" width="192" height="34" rx="8" fill="#EEF3FB" stroke="#1F4E79" stroke-width="1.4"/>`;
+  s+=`<text x="747" y="31" text-anchor="start" font-size="12" fill="#1F4E79" font-weight="700">Folio:</text>`;
+  let folioShow=folio.length>20?folio.slice(0,19)+'…':folio;
+  s+=`<text x="792" y="31" text-anchor="start" font-size="12.5" fill="#1C2A33" font-weight="600">${escapeHtml(folioShow)}</text>`;
+  s+=`<rect x="735" y="${canvasH-44}" width="192" height="34" rx="8" fill="#FBEEEE" stroke="#A32D2D" stroke-width="1.4"/>`;
+  s+=`<text x="831" y="${canvasH-22}" text-anchor="middle" font-size="14" fill="#A32D2D" font-weight="700">5 / 5</text>`;
+
+  CATS.forEach(cat=>{
+    const items=state.cats[cat.key]; const n=items.length;
+    const bx=cat.bx, rx=bx-78, w=156;
+    const headerY = cat.side==='top' ? HEADER_TOP : botHeaderY;
+    const colR = bx;                          // borde derecho de las cajas = rama vertical
+    const headerInnerY = cat.side==='top' ? headerY+HEADERH : headerY;
+    const attachX = bx + 26;                  // punto de la espina (da el ángulo del pescado)
+    // hueso diagonal (silueta de pescado)
+    s+=`<line x1="${attachX}" y1="${spineY}" x2="${bx}" y2="${headerInnerY}" stroke="#A99C82" stroke-width="1.6"/>`;
+
+    if(open(cat.key) && n>0){
+      const startY = cat.side==='top' ? topStart : botStart;
+      const colH = meas[cat.key].h;
+      // rama vertical de la categoría
+      s+=`<line x1="${colR}" y1="${(cat.side==='top'?headerInnerY:startY).toFixed(1)}" x2="${colR}" y2="${(cat.side==='top'?startY+colH:headerY).toFixed(1)}" stroke="#CFC6B3" stroke-width="1.4"/>`;
+      let y=startY;
+      meas[cat.key].blocks.forEach(b=>{
+        const it=b.it;
+        const col = it.estado==='verificada' ? '#0F6E56' : '#A35A0F';
+        const subc = it.estado==='verificada' ? '#3F8F76' : '#B5793A';
+        const maxLen=Math.max(...b.cl.map(l=>l.length));
+        const padX=8, lineH=13;
+        const COLW=150;
+        const boxW=COLW;
+        const bxx=colR-boxW, byy=y;
+        // conector rama->caja
+        s+=`<line x1="${colR}" y1="${(byy+b.boxH/2).toFixed(1)}" x2="${(colR+0).toFixed(1)}" y2="${(byy+b.boxH/2).toFixed(1)}" stroke="${col}" stroke-width="1"/>`;
+        s+=`<rect x="${bxx.toFixed(1)}" y="${byy.toFixed(1)}" width="${boxW}" height="${b.boxH}" rx="6" fill="#FFFFFF" stroke="${col}" stroke-width="1.3"/>`;
+        b.cl.forEach((l,k)=>{ s+=`<text x="${(bxx+padX).toFixed(1)}" y="${(byy+6+10+k*lineH).toFixed(1)}" text-anchor="start" font-size="11" font-weight="600" fill="${col}">${escapeHtml(l)}</text>`; });
+        // sub-causas: TODO el texto
+        let sy=byy+b.boxH+12;
+        b.subBlocks.forEach(sb=>{
+          s+=`<line x1="${(bxx+4).toFixed(1)}" y1="${(sy-3).toFixed(1)}" x2="${(bxx+18).toFixed(1)}" y2="${(sy-3).toFixed(1)}" stroke="${subc}" stroke-width="1"/>`;
+          sb.forEach((ln,q)=>{ const pre=q===0?'\u203a\u00a0':'\u00a0\u00a0'; s+=`<text x="${(bxx+8).toFixed(1)}" y="${sy.toFixed(1)}" text-anchor="start" font-size="9.5" fill="${subc}">${pre}${escapeHtml(ln)}</text>`; sy+=11; });
+          sy+=4;
         });
-      }
-      
-    } catch(err) {
-      console.error('Error al cargar mensajes:', err);
-      ticketsDiv.innerHTML = `
-        <div class="ticket" style="background: #f8d7da; color: #721c24; border-left-color: #721c24;">
-          <strong>⚠️ Error de conexión</strong><br>
-          No se pudieron cargar los mensajes. Verifica tu conexión o configuración de Google Sheets.
-          <br><small>Error: ${escapeHtml(err.message)}</small>
-        </div>
-      `;
-    }
-  }
-
-  async function sendMessage(nombre, mensaje) {
-    try {
-      // Mostrar estado de carga
-      const originalBtnText = sendBtn.innerHTML;
-      sendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
-      sendBtn.disabled = true;
-      
-      const response = await fetch(API_URL, {
-        method: 'POST',
-        body: JSON.stringify({ 
-          nombre: nombre.trim(), 
-          mensaje: mensaje.trim() 
-        })
+        y += b.boxH + (b.subBlocks.length? (sy-(byy+b.boxH+12))+4 : 0) + 16;
       });
-      
-      const result = await response.json();
-      
-      if (result.success === false) {
-        throw new Error(result.error || 'Error al guardar');
-      }
-      
-      // Éxito: recargar mensajes
-      await loadMessages();
-      
-      // Mostrar confirmación temporal
-      const tempMsg = document.createElement('div');
-      tempMsg.className = 'ticket';
-      tempMsg.style.background = '#d4edda';
-      tempMsg.style.color = '#155724';
-      tempMsg.style.borderLeftColor = '#155724';
-      tempMsg.innerHTML = '✅ ¡Mensaje enviado con éxito! Gracias por tu billete.';
-      ticketsDiv.insertBefore(tempMsg, ticketsDiv.firstChild);
-      setTimeout(() => tempMsg.remove(), 3000);
-      
-    } catch(err) {
-      console.error('Error al enviar mensaje:', err);
-      alert('❌ Error al enviar: ' + err.message + '\nIntenta de nuevo más tarde.');
-    } finally {
-      sendBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Dejar billete en estación';
-      sendBtn.disabled = false;
     }
-  }
-
-  // Evento de envío
-  sendBtn.addEventListener('click', async () => {
-    let nombre = nameInput.value.trim();
-    let mensaje = msgInput.value.trim();
-    
-    if (!mensaje) {
-      alert("✏️ Escribe un mensaje en el billete antes de enviar");
-      msgInput.focus();
-      return;
-    }
-    
-    if (!nombre) {
-      nombre = "Viajero anónimo";
-      nameInput.value = nombre;
-    }
-    
-    await sendMessage(nombre, mensaje);
-    msgInput.value = "";
-    nameInput.value = "Amigo Petrowax";
+    // caja de la M (clic -> sección de captura)
+    const fill=n>0?'#E4F4EE':'#FFFFFF', stroke=n>0?'#0F6E56':'#C9BFA8';
+    s+=`<g style="cursor:pointer" onclick="scrollToCat('${cat.key}')">`;
+    s+=`<rect x="${rx}" y="${headerY}" width="${w}" height="36" rx="8" fill="${fill}" stroke="${stroke}" stroke-width="1.2"/>`;
+    s+=`<text x="${bx-12}" y="${headerY+22}" text-anchor="middle" font-size="13.5" font-weight="650" fill="#1C2A33">${cat.name}</text>`;
+    s+=`</g>`;
+    // contador = botón que despliega/oculta
+    const isOpen=open(cat.key);
+    const bFill = n>0 ? (isOpen?'#0B5343':'#0F6E56') : '#EDE7D8';
+    const bStroke = isOpen ? '#0B5343' : (n>0?'#0F6E56':'#D8D0BF');
+    const cx=rx+w-15, cy=headerY+18;
+    s+=`<g style="cursor:pointer" onclick="toggleCat(event,'${cat.key}')"><title>${isOpen?'Ocultar':'Mostrar'} ramas de ${cat.name}</title>`;
+    s+=`<circle cx="${cx}" cy="${cy}" r="12" fill="${bFill}" stroke="${bStroke}" stroke-width="${isOpen?2:1}"/>`;
+    s+=`<text x="${cx}" y="${cy+4}" text-anchor="middle" font-size="12" font-weight="700" fill="${n>0?'#fff':'#9A8F78'}">${n}</text>`;
+    s+=`</g>`;
   });
+  fish.innerHTML=s;
 
-  // Cargar mensajes al iniciar
-  loadMessages();
-  
-  // Recargar cada 30 segundos
-  setInterval(loadMessages, 30000);
+  // meter
+  let tot=0,ver=0;
+  CATS.forEach(c=>state.cats[c.key].forEach(it=>{if((it.causa||'').trim()){tot++;if(it.estado==='verificada')ver++;}}));
+  const pct=tot?Math.round(ver/tot*100):0;
+  document.getElementById('bar').style.width=pct+'%';
+  document.getElementById('meter-read').textContent=`${ver} de ${tot} causas verificadas (${pct}%)`;
+}
+function wrapArr(txt,maxChars,maxLines){
+  const raw=String(txt||'').trim();
+  const words=raw.split(/\s+/).filter(Boolean);
+  if(!words.length) return ['(vacío)'];
+  const lines=[]; let cur='';
+  for(const w of words){
+    const test=(cur?cur+' ':'')+w;
+    if(test.length>maxChars && cur){ lines.push(cur); cur=w; if(lines.length>=maxLines)break; }
+    else cur=test;
+  }
+  if(lines.length<maxLines && cur) lines.push(cur);
+  const used=lines.join(' ');
+  if(used.length<raw.length){
+    let last=lines[lines.length-1]||'';
+    if(last.length>maxChars-1) last=last.slice(0,maxChars-1);
+    lines[lines.length-1]=last.replace(/\s+$/,'')+'…';
+  }
+  return lines.map(l=> l.length>maxChars ? l.slice(0,maxChars-1)+'…' : l);
+}
+function wrapText(txt,cx,startY,maxChars,maxLines,fill,size,weight){
+  const words=txt.split(/\s+/); const lines=[]; let cur='';
+  for(const w of words){ if((cur+' '+w).trim().length>maxChars){ if(cur)lines.push(cur); cur=w; } else cur=(cur+' '+w).trim(); if(lines.length>=maxLines-1)break; }
+  if(cur&&lines.length<maxLines)lines.push(cur);
+  if(lines.join(' ').length<txt.length){ lines[lines.length-1]=(lines[lines.length-1]||'').slice(0,maxChars-1)+'…'; }
+  return lines.map((l,i)=>`<text x="${cx}" y="${startY+i*16}" text-anchor="middle" font-size="${size}" font-weight="${weight}" fill="${fill}">${escapeHtml(l)}</text>`).join('');
+}
+window.scrollToCat=function(key){
+  const idx=CATS.findIndex(c=>c.key===key);
+  const card=document.querySelectorAll('.m-card')[idx];
+  if(card){card.scrollIntoView({behavior:'smooth',block:'center'});card.querySelector('.m-head').animate([{background:'#FBEFD6'},{background:'#FCFAF5'}],{duration:900});}
+};
+window.toggleCat=function(ev,key){
+  if(ev&&ev.stopPropagation)ev.stopPropagation();
+  if(expanded.has(key))expanded.delete(key); else expanded.add(key);
+  renderFishAndMeter();
+};
+
+/* ---------- toolbar ---------- */
+document.getElementById('btn-print').onclick=()=>window.print();
+document.getElementById('btn-export').onclick=()=>{
+  const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+  const f=(state.meta.folio||'ishikawa').replace(/[^\w\-]+/g,'_');
+  a.download=f+'.json'; a.click(); URL.revokeObjectURL(a.href);
+};
+document.getElementById('btn-import').onclick=()=>document.getElementById('file-input').click();
+document.getElementById('file-input').onchange=e=>{
+  const file=e.target.files[0]; if(!file)return;
+  const r=new FileReader();
+  r.onload=()=>{ try{ const d=JSON.parse(r.result);
+    if(!d.cats||!d.meta){alert('Archivo no válido.');return;}
+    CATS.forEach(c=>{if(!Array.isArray(d.cats[c.key]))d.cats[c.key]=[];});
+    state=d; normalize(state); hydrate(); save();
+  }catch(err){alert('No se pudo leer el archivo.');} };
+  r.readAsText(file); e.target.value='';
+};
+document.getElementById('btn-reset').onclick=()=>{
+  if(confirm('¿Borrar todo y empezar en blanco? Exporta primero si quieres conservarlo.')){
+    state=freshState(); hydrate(); save();
+  }
+};
+function hydrate(){
+  document.querySelectorAll('[data-meta]').forEach(inp=>inp.value=state.meta[inp.dataset.meta]||'');
+  efecto.value=state.efecto||'';
+  renderCards(); renderPrio(); renderFishAndMeter();
+}
+
+/* ---------- init ---------- */
+renderCards(); renderPrio(); renderFishAndMeter();
 </script>
 </body>
 </html>
